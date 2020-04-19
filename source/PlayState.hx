@@ -1,5 +1,6 @@
 package;
 
+import flixel.ui.FlxButton;
 import flixel.effects.particles.FlxEmitter;
 import flixel.util.FlxTimer;
 import flixel.FlxSprite;
@@ -13,6 +14,8 @@ import flixel.addons.display.FlxBackdrop;
 
 class PlayState extends FlxState
 {
+	public static var LevelsData:LevelsData = new LevelsData();
+
 	var _player:Player;
 	var _whale:Whale;
 	var _aliens:FlxGroup = new FlxGroup();
@@ -24,16 +27,26 @@ class PlayState extends FlxState
 	var _countdownText:FlxText;
 	var _endgameTimer:FlxTimer;
 	var _collisionCooldownTimer:FlxTimer = new FlxTimer();
+	var _level:Int;
+	var _levelClear:Bool = false;
+
+	public function new(level:Int)
+	{
+		_level = level;
+		super();
+	}
 
 	override public function create():Void
 	{
 		var backdrop:FlxBackdrop = new FlxBackdrop("assets/images/background.png");
 		add(backdrop);
 
+		FlxG.sound.playMusic("assets/music/music2.wav", 0.6, true);
+
 		_player = new Player();
 		add(_player);
 
-		_whale = new Whale();
+		_whale = new Whale(LevelsData.Levels[_level].Health);
 		add(_whale);
 
 		//var testAlien:Alien = new Alien(310, 0, _whale);
@@ -58,10 +71,11 @@ class PlayState extends FlxState
 		add(_hud);
 
 		_endgameTimer = new FlxTimer();
-		_endgameTimer.start(200, gameWon);
+		_endgameTimer.start(LevelsData.Levels[_level].Time, gameWon);
 		// _hud.forEach(function(obj:FlxBasic){
 		// 	obj.scro
 		// })
+		_aliensNeeded = LevelsData.Levels[_level].NumberOfAliens;
 
 
 
@@ -83,11 +97,8 @@ class PlayState extends FlxState
 		
 		FlxG.overlap(_whale, _harpoons, whaleShot);
 
-		if (!_collisionCooldownTimer.active)
-			FlxG.overlap(_player, _whale, whaleStrike);
-		else{
+		FlxG.overlap(_player, _whale, whaleStrike);
 
-		}
 
 		_harpoons.forEach(function(obj:FlxBasic){
 			var harpoon:Harpoon = cast obj;
@@ -126,10 +137,40 @@ class PlayState extends FlxState
 
 	}
 
+	public function nextLevel()
+	{
+		FlxG.switchState(new PlayState(_level+1));
+	}
+	public function menu()
+	{
+		FlxG.switchState(new MenuState());
+	}
+
 	public function gameWon(timer:FlxTimer)
 	{
+		_levelClear = true;
 		var timer = new FlxTimer();
-		timer.start(2, hyperspaceWhaleSpeed, 1000);
+		timer.start(1, hyperspaceWhaleSpeed, 1000);
+
+		if (_level+1 > LevelsData.Levels.length-1)
+		{
+			var text:FlxText = new FlxText(150, 50, 400, "Thank You For Saving the Space Whales!", 50);
+			text.scrollFactor.set(0,0);
+			text.alignment = CENTER;
+			add(text);
+			var button:FlxButton = new FlxButton(300, 350, "Return to menu", menu);
+			button.scale.set(3,3);
+			button.scrollFactor.set(0,0);
+			add(button);
+
+		}else{
+
+		    var button:FlxButton = new FlxButton(300, 300, "Next Level!", nextLevel);
+			button.scale.set(3,3);
+			button.scrollFactor.set(0,0);
+
+		    add(button);
+		}
 
 
 		// var pos = _whale.x;
@@ -146,15 +187,14 @@ class PlayState extends FlxState
 
 	public function endGame()
 	{
+		if (_levelClear)
+			return;
 		FlxG.camera.fade(FlxColor.BLACK, 2, false, gameOver);
-
-
-
 	}
 
 	public function gameOver()
 	{
-		var restart = new PlayState();
+		var restart = new PlayState(_level);
 		//destroy();
 		FlxG.switchState(restart);
 	}
@@ -163,8 +203,9 @@ class PlayState extends FlxState
 	{
 		var alien = new Alien(
 			FlxG.random.float(_whale.x, _whale.x+_whale.width), 
-			FlxG.random.float(_whale.y-100, _whale.y - 500), _whale);
-		alien.chooseTarget(_whale.x, _whale.x+_whale.width);
+			FlxG.random.float(_whale.y-100, _whale.y - 500), _whale,
+			LevelsData.Levels[_level].RetractWaitTime);
+		alien.chooseTarget(_whale.x, _whale.x+_whale.width, _whale.y);
 		_harpoons.add(alien.harpoon);	
 		_aliens.add(alien);
 		_aliensNeeded--;
@@ -190,6 +231,7 @@ class PlayState extends FlxState
 
 		if (!harpoon.InWhale && FlxG.pixelPerfectOverlap(whale, harpoon))
 		{
+			FlxG.sound.play("assets/sounds/hit.wav", 0.6);
 			harpoon.hitWhale();
 			whale.hit(1, harpoon.Point);
 

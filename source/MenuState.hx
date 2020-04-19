@@ -35,7 +35,7 @@ class MenuState extends FlxState
 
     public function play()
     {
-        FlxG.switchState(new PlayState());
+        FlxG.switchState(new PlayState(0));
     }
 
     public function instructions()

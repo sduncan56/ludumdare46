@@ -8,8 +8,9 @@ import flixel.FlxSprite;
 class Whale extends FlxSprite
 {
     public var Health(default, null):Int = 100;
-    public function new()
+    public function new(health:Int)
     {
+        Health = health;
         
 
         super(100, 100, "assets/images/whale.png");

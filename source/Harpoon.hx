@@ -74,6 +74,29 @@ class Harpoon extends FlxSprite
     }
 
     override public function update(elapsed:Float) {
+        // var toRemove:List<ChainSegment> = new List();
+        // _chains.forEach(function(obj){
+        //     var chain:ChainSegment = cast obj;
+        //     if (chain.y < _alien.y)
+        //     {
+        //         chain.kill();
+        //         toRemove.push(chain);
+        //     }
+
+        // });
+
+        // for (chain in toRemove)
+        // {
+        //     _chains.remove(chain);
+        // }
+
+        // var grp:FlxGroup = new FlxGroup();
+        // _chains.forEachExists(function(obj){
+        //     grp.add(obj);
+        // });
+        // _chains = grp;
+            
+
         if (!_stopped && y - _lastChainPos > _ChainLength)
         {
             var chain:ChainSegment;

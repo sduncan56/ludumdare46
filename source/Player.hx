@@ -35,6 +35,8 @@ class Player extends FlxSprite
         velocity.y += 1 * _sinAngle;
 
         _flame.visible = true;
+
+        FlxG.sound.play("assets/sounds/rocket.wav", 0.01, false);
     }
 
     private function move(elapsed:Float)
