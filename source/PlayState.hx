@@ -17,30 +17,22 @@ import flixel.group.FlxGroup;
 class PlayState extends FlxState
 {
 	var _player:Player;
+	var _whale:Whale;
+	var _aliens:FlxGroup = new FlxGroup();
+	var _harpoons:FlxGroup = new FlxGroup();
 	override public function create():Void
 	{
 		_player = new Player();
 		add(_player);
 
-		var _factory:FlixelFactory = new FlixelFactory();
-		
-		var whaleData:DragonBonesData = _factory.parseDragonBonesData
-		(
-			haxe.Json.parse(Assets.getText("assets/images/Stip_ske.json"))
-		);
+		_whale = new Whale();
+		add(_whale);
 
-		_factory.parseTextureAtlasData(
-			haxe.Json.parse(Assets.getText("assets/images/Stip_tex.json")),
-			Assets.getBitmapData("assets/images/Stip_tex.png")
-		);
+		var testAlien:Alien = new Alien(300, 0);
+		_aliens.add(testAlien);
+		add(_aliens);
 
-		var armatureGroup = _factory.buildArmatureDisplay(
-			new FlixelArmatureCollider(250, 250, 27, 25, 13, 8), whaleData.armatureNames[0]);
-
-			armatureGroup.forEach(_setAnimationProps);
-			armatureGroup.forEach(_playAnimation);
-
-		add(cast armatureGroup);
+		_harpoons.add(testAlien.fireHarpoon());
 
 
 		FlxG.camera.follow(_player, TOPDOWN, 1);
@@ -48,28 +40,21 @@ class PlayState extends FlxState
 		super.create();
 	}
 
-	private function _setAnimationProps(display:FlixelArmatureDisplay):Void
-		{
-			display.antialiasing = true;
-			display.x = 100;
-			display.y = 100;
-			display.scaleX = 0.50;
-			display.scaleY = 0.50;
-		}
-	private function _playAnimation(display:FlixelArmatureDisplay):Void
-		{
-			//display.animation.play(display.animation.animationNames[0]);
-			
-		}
-	
-	  private function _animationHandler(event:FlixelEvent): Void 
-		{
-			var eventObject:EventObject = event.eventObject;
-		}
-
 
 	override public function update(elapsed:Float):Void
 	{
+		FlxG.overlap(_whale, _harpoons, whaleShot);
+
 		super.update(elapsed);
+	}
+
+	public function whaleShot(whale:Whale, harpoon:Harpoon)
+	{
+		if (!harpoon.InWhale && FlxG.pixelPerfectOverlap(whale, harpoon))
+		{
+			harpoon.hitWhale();			
+
+			FlxG.camera.shake(0.05, 0.05);
+		}
 	}
 }
