@@ -6,7 +6,7 @@ import flixel.FlxSprite;
 class Player extends FlxSprite
 {
     public function new() {
-        super(FlxG.width/2, FlxG.height/2, "assets/images/ship.png");
+        super(FlxG.width/2-200, FlxG.height/2-120, "assets/images/ship.png");
     }
 
     private function move(elapsed:Float)

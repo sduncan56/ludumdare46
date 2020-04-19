@@ -1,14 +1,6 @@
 package;
 
-import dragonBones.events.EventObject;
-import dragonBones.flixel.FlixelEvent;
 import flixel.FlxBasic;
-import flixel.FlxObject;
-import dragonBones.flixel.FlixelArmatureDisplay;
-import dragonBones.flixel.FlixelArmatureCollider;
-import openfl.Assets;
-import dragonBones.objects.DragonBonesData;
-import dragonBones.flixel.FlixelFactory;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
@@ -28,14 +20,19 @@ class PlayState extends FlxState
 		_whale = new Whale();
 		add(_whale);
 
-		var testAlien:Alien = new Alien(300, 0);
+		var testAlien:Alien = new Alien(310, 0, _whale);
+		//testAlien.fireHarpoon();
+		testAlien.chooseTarget(_whale.x, _whale.x+_whale.width);
 		_aliens.add(testAlien);
 		add(_aliens);
 
-		_harpoons.add(testAlien.fireHarpoon());
+		_harpoons.add(testAlien.harpoon);
+		add(_harpoons);
+
+		//FlxG.debugger.drawDebug = true;
 
 
-		FlxG.camera.follow(_player, TOPDOWN, 1);
+		FlxG.camera.follow(testAlien, TOPDOWN, 1);
 
 		super.create();
 	}
@@ -43,7 +40,14 @@ class PlayState extends FlxState
 
 	override public function update(elapsed:Float):Void
 	{
+		FlxG.worldBounds.set(_whale.x-300, _whale.y-300, _whale.width+300, _whale.height+300);
 		FlxG.overlap(_whale, _harpoons, whaleShot);
+
+		_harpoons.forEach(function(obj:FlxBasic){
+			var harpoon:Harpoon = cast obj;
+
+			FlxG.overlap(_player, harpoon.Chains, chainCollision);
+		});
 
 		super.update(elapsed);
 	}
@@ -55,6 +59,14 @@ class PlayState extends FlxState
 			harpoon.hitWhale();			
 
 			FlxG.camera.shake(0.05, 0.05);
+		}
+	}
+
+	public function chainCollision(player:Player, chain:ChainSegment)
+	{
+		if (!chain.Broken)
+		{
+			chain.breakChain(player.velocity);
 		}
 	}
 }
