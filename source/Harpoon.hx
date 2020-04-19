@@ -1,5 +1,6 @@
 package;
 
+import flixel.math.FlxPoint;
 import haxe.Log;
 import flixel.FlxBasic;
 import flixel.group.FlxGroup;
@@ -16,6 +17,7 @@ class Harpoon extends FlxSprite
     private var _withdrawing:Bool = false;
     private var _alien:Alien;
     public var InWhale(default, null):Bool;
+    public var Point:FlxPoint = new FlxPoint();
 
     public var Chains(get, null):FlxGroup;
 
@@ -110,6 +112,8 @@ class Harpoon extends FlxSprite
             }
 
         }
+
+        Point.set(x+width/2-8, y+height);
 
         super.update(elapsed);
     }

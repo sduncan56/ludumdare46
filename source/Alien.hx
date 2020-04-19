@@ -16,7 +16,7 @@ class Alien extends FlxSprite
     var _resetTimer:FlxTimer = new FlxTimer();
     var _resetting:Bool = false;
     public var harpoon(default, null):Harpoon;
-    public function new(x:Int, y:Int, target:FlxSprite)
+    public function new(x:Float, y:Float, target:FlxSprite)
     {
         super(x, y, "assets/images/alien.png");
 
@@ -30,12 +30,17 @@ class Alien extends FlxSprite
         _resetTimer.cancel();
         _resetting = false;
         tween =FlxTween.tween(this, {x:_target.x+_target.width/2, y: -4000},
-            6, {type: FlxTweenType.ONESHOT, ease:FlxEase.quadInOut});
+            6, {type: FlxTweenType.ONESHOT, ease:FlxEase.quadInOut,onComplete: leftGame});
+    }
+
+    public function leftGame(tween:FlxTween)
+    {
+        kill();
     }
 
     public function chooseTarget(x:Float, farX:Float)
     {
-        var goal:Float = FlxG.random.float(x, farX);
+        var goal:Float = FlxG.random.float(x, farX-60);
         tween = FlxTween.tween(this, {x:goal, y:-100}, 2, 
             {type: FlxTweenType.PERSIST, ease: FlxEase.quadInOut,
             onComplete: arrived});
