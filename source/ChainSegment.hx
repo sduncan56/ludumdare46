@@ -50,6 +50,14 @@ class ChainSegment extends FlxSprite
         kill();
         if (_belowChain != null)
             _belowChain.chainBrokeAbove();
+
+        if (_harpoon != null)
+        {
+            _harpoon.chainDestroyed();
+
+        }
+
+
         //allowCollisions = FlxObject.NONE;
        // velocity = new FlxPoint(10, 30);
 
@@ -73,7 +81,8 @@ class ChainSegment extends FlxSprite
                 }
                 if (_harpoon != null && !_harpoon.InWhale)
                 {
-                    _harpoon.destroy();
+                    // _harpoon.chainDestroyed();
+                    // _harpoon.destroy();
                 }
                 if (Broken)
                     kill();

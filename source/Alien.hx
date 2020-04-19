@@ -14,6 +14,7 @@ class Alien extends FlxSprite
     var tween:FlxTween;
     var _target:FlxSprite;
     var _resetTimer:FlxTimer = new FlxTimer();
+    var _resetting:Bool = false;
     public var harpoon(default, null):Harpoon;
     public function new(x:Int, y:Int, target:FlxSprite)
     {
@@ -21,7 +22,15 @@ class Alien extends FlxSprite
 
         _target = target;
 
-        harpoon = new Harpoon(x, y, 0);
+        harpoon = new Harpoon(x, y, 0, this);
+    }
+
+    public function leaveGame()
+    {
+        _resetTimer.cancel();
+        _resetting = false;
+        tween =FlxTween.tween(this, {x:_target.x+_target.width/2, y: -4000},
+            6, {type: FlxTweenType.ONESHOT, ease:FlxEase.quadInOut});
     }
 
     public function chooseTarget(x:Float, farX:Float)
@@ -47,6 +56,7 @@ class Alien extends FlxSprite
     private function resetWeapon(timer:FlxTimer)
     {
         harpoon.withdraw();
+        _resetting = true;
     }
 
     public function fireHarpoon()
@@ -57,5 +67,14 @@ class Alien extends FlxSprite
 
         //var harpoon = new Harpoon(x+width/2, y+20, 100);
         //FlxG.state.add(harpoon);
+    }
+    
+    override public function update(elapsed:Float)
+    {
+        if (_resetting && !harpoon.visible)
+        {
+            _resetting = false;
+            chooseTarget(_target.x, _target.x+_target.width);
+        }
     }
 }

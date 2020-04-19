@@ -14,15 +14,18 @@ class Harpoon extends FlxSprite
     private var _chains:FlxGroup = new FlxGroup();
     private var _stopped:Bool = true;
     private var _withdrawing:Bool = false;
+    private var _alien:Alien;
     public var InWhale(default, null):Bool;
 
     public var Chains(get, null):FlxGroup;
 
     function get_Chains() return _chains;
 
-    public function new(x:Float, y:Float, speed:Int) {
+    public function new(x:Float, y:Float, speed:Int, alien:Alien) {
         super(x, y, "assets/images/harpoon.png");
         visible = false;
+
+        _alien = alien;
 
         FlxG.state.insert(0,_chains);
     }
@@ -49,7 +52,23 @@ class Harpoon extends FlxSprite
            chainSeg.velocity.y = -50;
         });
 
+
         _withdrawing = true;
+    }
+
+    public function chainDestroyed()
+    {
+        _withdrawing = false;
+        _stopped = true;
+
+        _chains.forEach(function(obj){
+            obj.kill();
+        });
+        kill();
+
+
+
+        _alien.leaveGame();
     }
 
     override public function update(elapsed:Float) {
@@ -84,6 +103,8 @@ class Harpoon extends FlxSprite
             }
             if (last == null)
             {
+                _withdrawing = false;
+                InWhale = false;
                 visible = false;
                 velocity.y = 0;
             }

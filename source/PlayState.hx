@@ -21,8 +21,8 @@ class PlayState extends FlxState
 		add(_whale);
 
 		var testAlien:Alien = new Alien(310, 0, _whale);
-		//testAlien.fireHarpoon();
-		testAlien.chooseTarget(_whale.x, _whale.x+_whale.width);
+		testAlien.fireHarpoon();
+		//testAlien.chooseTarget(_whale.x, _whale.x+_whale.width);
 		_aliens.add(testAlien);
 		add(_aliens);
 
@@ -32,7 +32,7 @@ class PlayState extends FlxState
 		//FlxG.debugger.drawDebug = true;
 
 
-		FlxG.camera.follow(testAlien, TOPDOWN, 1);
+		FlxG.camera.follow(_player, TOPDOWN, 1);
 
 		super.create();
 	}

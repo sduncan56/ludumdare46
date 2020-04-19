@@ -13,11 +13,11 @@ class Player extends FlxSprite
     {
         if (FlxG.keys.anyPressed([UP, W]))
         {
-            angle-=1;
+            angle-=3;
         }
         if (FlxG.keys.anyPressed([DOWN, S]))
         {
-            angle += 1;
+            angle += 3;
         }
 
         if (FlxG.keys.anyPressed([RIGHT, D]))
