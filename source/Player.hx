@@ -13,7 +13,9 @@ class Player extends FlxSprite
     private var _flame:FlxSprite;
 
     public function new() {
-        super(FlxG.width/2-200, FlxG.height/2-120, "assets/images/ship.png");
+        super(FlxG.width/2-200, FlxG.height/2-150, "assets/images/ship.png");
+
+        velocity.x = 50;
         
         _fireEmitter = new FlxEmitter(x+5, y+width/2, 30);
         _fireEmitter.makeParticles(1,1,FlxColor.RED, 250);
@@ -25,6 +27,14 @@ class Player extends FlxSprite
         _flame.velocity = velocity;
         _flame.visible = false;
         FlxG.state.add(_flame);
+    }
+
+    private function accelerate()
+    {
+        velocity.x += 1 * _cosAngle;
+        velocity.y += 1 * _sinAngle;
+
+        _flame.visible = true;
     }
 
     private function move(elapsed:Float)
@@ -40,10 +50,7 @@ class Player extends FlxSprite
 
         if (FlxG.keys.anyPressed([RIGHT, D]))
         {
-            velocity.x += 1 * _cosAngle;
-            velocity.y += 1 * _sinAngle;
-
-            _flame.visible = true;
+            accelerate();
 
             // if (!_fireEmitter.emitting)
             //     _fireEmitter.start(false, 0.01);
@@ -53,6 +60,17 @@ class Player extends FlxSprite
             _flame.visible = false;
         }
             
+    }
+
+    public function hitWale()
+    {
+        y -= 5;
+        _flame.x = x-3;
+        _flame.y = y+11;
+        //_flame.y -= 5;
+
+        velocity.x = -velocity.x/2;
+        velocity.y = -velocity.y/2;
     }
 
     override public function update(elapsed:Float):Void
